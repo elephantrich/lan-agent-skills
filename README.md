@@ -1,76 +1,76 @@
-# 🤖 LAN Agent Skills - 局域网 Agent 技能共享系统
+# 🤖 LAN Agent Skills - Multi-Agent Skill Sharing Platform
 
-一个安全、高效的局域网内 Agent 技能共享与协同工作平台。支持多 Agent 之间的技能发现、同步与调用，数据完全在局域网内流转，确保企业数据安全。
+A secure and efficient **Local Area Network (LAN) based multi-agent skill sharing and collaboration platform**. This system enables AI agents to discover, share, and synchronize skills within a private network, ensuring complete data privacy and security.
 
-## ✨ 核心特性
+## ✨ Key Features
 
-- 🔒 **完全离线**：所有数据在局域网内流转，不连接外网
-- 🔄 **双向同步**：Agent 可以上传技能，也可以发现/下载新技能
-- 🚀 **实时更新**：WebSocket 推送机制，技能更新实时通知
-- 🧠 **语义搜索**：基于向量的技能搜索，支持自然语言查询
-- 📦 **版本控制**：Git 管理技能版本，支持回滚与审计
-- 🐳 **容器化部署**：Docker Compose 一键启动
+- 🔒 **Fully Offline**: All data stays within your LAN, no external internet connection required
+- 🔄 **Bidirectional Sync**: Agents can both upload new skills and discover/download existing ones
+- 🚀 **Real-time Updates**: WebSocket-based push notifications for instant skill updates
+- 🧠 **Semantic Search**: Vector-based semantic search supporting natural language queries
+- 📦 **Version Control**: Git-based skill versioning with rollback and audit capabilities
+- 🐳 **Containerized Deployment**: One-click deployment with Docker Compose
 
-## 🏗️ 架构概览
+## 🏗️ Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                         局域网                              │
-│                                                             │
+│                    Local Area Network                        │
+│                                                              │
 │   ┌──────────────────┐          ┌──────────────────┐        │
-│   │    服务器         │◄────────►│    Agent 1       │        │
-│   │  (技能注册中心)    │  Git/Sync │  (技能上传/下载)  │        │
+│   │     Server       │◄────────►│     Agent 1      │        │
+│   │ (Skill Registry) │  Git/Sync│ (Upload/Download) │        │
 │   │                  │          │                  │        │
-│   │  ┌────────────┐  │◄────────►│    Agent 2       │        │
-│   │  │  Git Repo  │  │ WebSocket│  (技能消费者)     │        │
-│   │  │  技能仓库   │  │ 实时推送 │                  │        │
-│   │  └────────────┘  │◄────────►│    Agent N       │        │
+│   │  ┌────────────┐  │◄────────►│     Agent 2      │        │
+│   │  │  Git Repo  │  │ WebSocket│   (Consumer)     │        │
+│   │  │  (Bare)    │  │  Push    │                  │        │
+│   │  └────────────┘  │◄────────►│     Agent N      │        │
 │   │  ┌────────────┐  │          │                  │        │
-│   │  │ChromaDB    │  │          └──────────────────┘        │
-│   │  │向量数据库  │  │                                     │
-│   │  └────────────┘  │                                     │
-│   └──────────────────┘                                     │
+│   │  │  ChromaDB  │  │          └──────────────────┘        │
+│   │  │Vector Store│  │                                       │
+│   │  └────────────┘  │                                       │
+│   └──────────────────┘                                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 方式一：Docker Compose 一键部署（推荐）
+### Option 1: Docker Compose (Recommended)
 
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/YOUR_USERNAME/lan-agent-skills.git
+# 1. Clone the repository
+git clone https://github.com/elephantrich/lan-agent-skills.git
 cd lan-agent-skills
 
-# 2. 启动所有服务
+# 2. Start all services
 docker-compose up -d
 
-# 3. 查看日志
+# 3. View logs
 docker-compose logs -f
 ```
 
-### 方式二：本地 Python 运行
+### Option 2: Local Python Development
 
 ```bash
-# 1. 创建虚拟环境
+# 1. Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# 2. 安装依赖
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. 启动服务器
+# 3. Start server
 python server/main.py
 
-# 4. 在另一台机器上启动 Agent
+# 4. Start agent on another machine
 python client/agent.py
 ```
 
-## 📖 使用指南
+## 📖 Usage Guide
 
-### 1. 服务器配置
+### 1. Server Configuration
 
-编辑 `server/config.yaml`：
+Edit `server/config.yaml`:
 
 ```yaml
 server:
@@ -80,7 +80,7 @@ server:
 
 git:
   repo_path: "/data/skills-repo"
-  remote_url: null  # 本地仓库，不连接外网
+  remote_url: null  # Local repo, no external network
 
 vector_db:
   path: "/data/chromadb"
@@ -88,17 +88,17 @@ vector_db:
 
 security:
   allowed_hosts: ["192.168.0.0/16", "10.0.0.0/8"]
-  require_auth: false  # 内网环境可关闭
+  require_auth: false  # Disable for LAN environment
 ```
 
-### 2. Agent 上传技能
+### 2. Agent Uploading Skills
 
 ```python
 from client.agent import SkillAgent
 
 agent = SkillAgent(server_url="http://192.168.1.100:8080")
 
-# 上传新技能
+# Upload a new skill
 agent.upload_skill(
     name="excel_analyzer",
     code='''
@@ -112,124 +112,125 @@ def analyze_excel(file_path):
         "summary": df.describe()
     }
 ''',
-    description="自动分析Excel文件，返回行数、列名和统计摘要",
+    description="Automatically analyze Excel files, returning row count, column names, and statistical summary",
     tags=["excel", "data-analysis", "pandas"]
 )
 ```
 
-### 3. Agent 发现并调用技能
+### 3. Agent Discovering and Using Skills
 
 ```python
-# 搜索技能
-results = agent.search_skills("分析Excel文件")
+# Search for skills
+results = agent.search_skills("Excel data analysis")
 print(results)
 # [{'name': 'excel_analyzer', 'description': '...', 'score': 0.95}]
 
-# 加载并使用技能
+# Load and use the skill
 skill = agent.load_skill("excel_analyzer")
 result = skill.analyze_excel("/path/to/data.xlsx")
 ```
 
-### 4. 实时同步（WebSocket）
+### 4. Real-time Sync (WebSocket)
 
 ```python
-# Agent 自动接收新技能通知
+# Agent automatically receives new skill notifications
 @agent.on_skill_update
 def handle_new_skill(skill_info):
-    print(f"🆕 发现新技能: {skill_info['name']}")
-    print(f"描述: {skill_info['description']}")
+    print(f"🆕 New skill discovered: {skill_info['name']}")
+    print(f"Description: {skill_info['description']}")
     
-    # 自动加载
+    # Auto-load
     agent.load_skill(skill_info['name'])
 
-# 保持 WebSocket 连接
+# Keep WebSocket connection
 agent.connect_websocket("ws://192.168.1.100:8765")
 ```
 
-## 🔧 项目结构
+## 🔧 Project Structure
 
 ```
 lan-agent-skills/
-├── 📁 server/                  # 服务器端
-│   ├── main.py                 # FastAPI 主程序
-│   ├── git_manager.py          # Git 仓库管理
-│   ├── vector_store.py         # ChromaDB 向量数据库
-│   ├── websocket_server.py     # WebSocket 实时推送
-│   ├── auth.py                 # 认证模块
-│   └── config.yaml             # 配置文件
+├── 📁 server/                  # Server-side
+│   ├── main.py                 # FastAPI main application
+│   ├── git_manager.py          # Git repository management
+│   ├── vector_store.py         # ChromaDB vector database
+│   ├── websocket_server.py     # WebSocket real-time push
+│   ├── auth.py                 # Authentication module
+│   └── config.yaml             # Configuration file
 │
-├── 📁 client/                  # 客户端（Agent）
-│   ├── agent.py                # Agent SDK 主类
-│   ├── skill_uploader.py       # 技能上传工具
-│   ├── skill_loader.py         # 技能加载器
-│   ├── websocket_client.py     # WebSocket 客户端
-│   └── examples/               # 使用示例
+├── 📁 client/                  # Client-side (Agent)
+│   ├── agent.py                # Agent SDK main class
+│   ├── skill_uploader.py       # Skill upload utility
+│   ├── skill_loader.py         # Skill loader
+│   ├── websocket_client.py     # WebSocket client
+│   └── examples/               # Usage examples
 │
-├── 📁 shared/                  # 共享模块
-│   ├── models.py               # 数据模型
-│   ├── utils.py                # 工具函数
-│   └── constants.py            # 常量定义
+├── 📁 shared/                  # Shared modules
+│   ├── models.py               # Data models
+│   ├── utils.py                # Utility functions
+│   └── constants.py            # Constants
 │
-├── 📁 scripts/                 # 部署脚本
-│   ├── setup_server.sh         # 服务器初始化
-│   ├── setup_client.sh         # 客户端初始化
+├── 📁 scripts/                 # Deployment scripts
+│   ├── setup_server.sh         # Server initialization
+│   ├── setup_client.sh         # Client initialization
 │   └── docker/
 │       ├── Dockerfile.server
 │       ├── Dockerfile.client
 │       └── docker-compose.yml
 │
-├── 📁 tests/                   # 测试
+├── 📁 tests/                   # Tests
 │   ├── test_git_manager.py
 │   ├── test_vector_store.py
 │   └── test_websocket.py
 │
-├── README.md                   # 本文件
-├── requirements.txt            # Python 依赖
-└── LICENSE                     # 开源协议
+├── README.md                   # This file
+├── README.zh.md                # Chinese version
+├── requirements.txt            # Python dependencies
+└── LICENSE                     # License
 ```
 
-## 🧪 测试
+## 🧪 Testing
 
 ```bash
-# 运行所有测试
+# Run all tests
 pytest tests/
 
-# 运行特定测试
+# Run specific test
 pytest tests/test_git_manager.py -v
 
-# 带覆盖率报告
+# With coverage report
 pytest --cov=server --cov=client tests/
 ```
 
-## 🚀 生产环境部署建议
+## 🚀 Production Deployment Recommendations
 
-1. **使用 Docker Swarm 或 Kubernetes** 进行集群部署
-2. **配置 Nginx 反向代理** 处理 HTTPS 和负载均衡
-3. **定期备份 Git 仓库和 ChromaDB** 数据
-4. **设置监控告警**（Prometheus + Grafana）
-5. **配置防火墙规则** 限制仅局域网访问
+1. **Use Docker Swarm or Kubernetes** for cluster deployment
+2. **Configure Nginx reverse proxy** for HTTPS and load balancing
+3. **Regular backups** of Git repository and ChromaDB data
+4. **Set up monitoring alerts** (Prometheus + Grafana)
+5. **Configure firewall rules** to restrict LAN access only
 
-## 📄 许可证
+## 📄 License
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+MIT License - See [LICENSE](LICENSE) file for details
 
-## 🤝 贡献指南
+## 🤝 Contributing
 
-欢迎提交 Issue 和 Pull Request！
+Welcome to submit Issues and Pull Requests!
 
-1. Fork 本仓库
-2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交你的更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开一个 Pull Request
-
----
-
-## 📧 联系方式
-
-- 项目主页：https://github.com/YOUR_USERNAME/lan-agent-skills
-- 问题反馈：https://github.com/YOUR_USERNAME/lan-agent-skills/issues
+1. Fork this repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-**如果这个项目对你有帮助，请给我们一个 ⭐ Star！**
+## 📧 Contact
+
+- Project Homepage: https://github.com/elephantrich/lan-agent-skills
+- Issue Feedback: https://github.com/elephantrich/lan-agent-skills/issues
+
+---
+
+**If this project helps you, please give us a ⭐ Star!**
