@@ -1,0 +1,84 @@
+# LAN Agent Skills 服务器配置
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+  websocket_port: 8765
+  workers: 4
+  
+  # API 配置
+  api_prefix: "/api/v1"
+  docs_url: "/docs"
+  redoc_url: "/redoc"
+
+git:
+  # Git 仓库路径（服务器本地路径）
+  repo_path: "./data/skills-repo"
+  
+  # 是否使用 bare 仓库模式
+  bare_mode: true
+  
+  # 提交者信息
+  committer_name: "LAN Agent Skills"
+  committer_email: "skills@lan.local"
+  
+  # 自动拉取间隔（秒）
+  auto_pull_interval: 30
+
+vector_db:
+  # ChromaDB 存储路径
+  persist_directory: "./data/chromadb"
+  
+  # 集合名称
+  collection_name: "skills"
+  
+  # 嵌入模型
+  embedding_model: "all-MiniLM-L6-v2"
+  
+  # 搜索结果数量
+  search_top_k: 5
+
+websocket:
+  # 心跳间隔（秒）
+  heartbeat_interval: 30
+  
+  # 最大连接数
+  max_connections: 100
+  
+  # 是否启用广播
+  enable_broadcast: true
+
+security:
+  # 允许的 IP 段（CIDR 格式）
+  allowed_hosts: 
+    - "192.168.0.0/16"
+    - "10.0.0.0/8"
+    - "172.16.0.0/12"
+    - "127.0.0.0/8"
+  
+  # 是否需要认证（开发环境可关闭）
+  require_auth: false
+  
+  # API Token（如需认证）
+  api_token: ""
+
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}"
+  
+  # 日志文件配置
+  log_file: "./logs/server.log"
+  rotation: "00:00"
+  retention: "7 days"
+
+# 技能配置
+skills:
+  # 支持的技能文件扩展名
+  extensions: [".py", ".js", ".ts", ".json"]
+  
+  # 自动加载目录
+  auto_load_dirs:
+    - "./data/skills-repo/skills"
+  
+  # 是否启用热重载
+  hot_reload: true

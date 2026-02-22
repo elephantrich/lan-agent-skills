@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: scripts/docker/Dockerfile.server
+    container_name: lan-agent-skills-server
+    ports:
+      - "8080:8080"
+      - "8765:8765"
+    volumes:
+      - ./data/skills-repo:/app/data/skills-repo
+      - ./data/chromadb:/app/data/chromadb
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    networks:
+      - lan-agent-network
+
+  # 示例 Agent 服务（可选）
+  agent-example:
+    build:
+      context: .
+      dockerfile: scripts/docker/Dockerfile.client
+    container_name: lan-agent-example
+    volumes:
+      - ./data/agent-data:/app/data
+    environment:
+      - SERVER_URL=http://server:8080
+      - AGENT_NAME=example-agent
+    depends_on:
+      - server
+    networks:
+      - lan-agent-network
+    profiles:
+      - example  # 需要显式启用: docker-compose --profile example up
+
+networks:
+  lan-agent-network:
+    driver: bridge
+
+volumes:
+  skills-repo:
+  chromadb:
